@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-const initialState = { isCartPresent: false}
+const initialState = { toggleCart: true}
 
 const toggleSlice = createSlice({
     name: "toggle",
     initialState,
     reducers: {
         toggle(state) {
-            state.isCartPresent = !state.isCartPresent;
+            state.toggleCart = !state.toggleCart;
         }
     }
 });
