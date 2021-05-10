@@ -4,8 +4,9 @@ import Cart from "./components/Cart/Cart";
 import Layout from "./components/Layout/Layout";
 import Products from "./components/Shop/Products";
 import Notification from "./components/UI/Notification";
-import { FIREBASE_URL } from "./FirebaseConst";
-import { toggleActions } from "./store/toggle";
+import { fetchCartData, sendCartData } from "./store/cart-actions";
+
+let isInitial = true;
 
 function App() {
   const dispatch = useDispatch();
@@ -14,41 +15,18 @@ function App() {
   const notification = useSelector((state) => state.toggle.notification);
 
   useEffect(() => {
-    const sendCartData = async () => {
-      dispatch(
-        toggleActions.showNotification({
-          status: "pending",
-          title: "Sending...",
-          message: "Sending Cart Data!!!",
-        })
-      );
-      const response = await fetch(FIREBASE_URL + "cart.json", {
-        method: "PUT",
-        body: JSON.stringify(cart),
-      });
+    dispatch(fetchCartData())
+  }, [dispatch]);
 
-      if (!response.ok) {
-        throw new Error("Sending Cart Data failed");
-      }
+  useEffect(() => {
+    if (isInitial) {
+      isInitial = false;
+      return;
+    }
 
-      dispatch(
-        toggleActions.showNotification({
-          status: "success",
-          title: "Success!",
-          message: "Sending Success!!!",
-        })
-      );
-    };
-
-    sendCartData().catch((error) => {
-      dispatch(
-        toggleActions.showNotification({
-          status: "error",
-          title: "Error!",
-          message: "Oops something went wrong!!!",
-        })
-      );
-    });
+    if(cart.changed){
+      dispatch(sendCartData(cart));
+    }
   }, [cart, dispatch]);
 
   return (
